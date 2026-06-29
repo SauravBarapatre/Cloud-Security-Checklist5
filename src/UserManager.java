@@ -1,5 +1,61 @@
 import java.util.Collection;
 import java.util.HashMap;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class UserManager {
+
+    private final HashMap<String, User> users;
+
+    public UserManager() {
+
+        users = new HashMap<>();
+
+    }
+
+    // ADD THIS METHOD HERE
+    private String hashPassword(String password) {
+
+        try {
+
+            MessageDigest md =
+                    MessageDigest.getInstance("SHA-256");
+
+            byte[] hash =
+                    md.digest(password.getBytes());
+
+            StringBuilder builder =
+                    new StringBuilder();
+
+            for (byte b : hash) {
+
+                builder.append(
+                        String.format("%02x", b));
+
+            }
+
+            return builder.toString();
+
+        }
+
+        catch (NoSuchAlgorithmException e) {
+
+            throw new RuntimeException(e);
+
+        }
+
+    }
+
+    // registerUser() starts here
+    public boolean registerUser(
+            String username,
+            String password,
+            String role) {
+
+        ...
+
+    }
+
 
 /**
  * UserManager.java
@@ -43,7 +99,12 @@ public class UserManager {
             return false;
         }
 
-        User user = new User(username, password, role);
+        User user =
+new User(
+        username,
+        hashPassword(password),
+        role
+);
 
         users.put(username, user);
 
@@ -67,7 +128,9 @@ public class UserManager {
             return null;
         }
 
-        if (user.getPassword().equals(password)) {
+        if(user.getPassword().equals(
+        hashPassword(password)
+)) {
             return user;
         }
 
@@ -115,7 +178,9 @@ public class UserManager {
             return false;
         }
 
-        user.setPassword(newPassword);
+        user.setPassword(
+        hashPassword(newPassword)
+);
 
         return true;
 
